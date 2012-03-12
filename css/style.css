@@ -1,0 +1,24 @@
+body {
+	margin: 0 auto;
+	width:600px;
+}
+h2 {
+	/*
+	text-align: center;
+	margin: 0 auto;
+	*/
+}
+
+#weiqi {
+	border: 0px solid blue;
+	position: absolute;
+	top:50px;
+}
+#path {
+	position: absolute;
+	top:50px;
+	/*
+	left:0;
+	*/
+	z-index: 200;
+}
