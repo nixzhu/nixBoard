@@ -25,7 +25,6 @@ function ninePoints(cxt) {
 		//circle
 		cxt.beginPath();
 		cxt.arc(np[i][0],np[i][1],3,0,2*Math.PI,false);
-		//cxt.arc(120,120,4,0,2*Math.PI,false);
 		cxt.fillStyle="black";
 		cxt.fill();
 	}
@@ -36,8 +35,8 @@ var move_count = 0;
 function mousedownHandler(e) {
 	var x, y;
 	if (e.offsetX || e.offsetX == 0) {
-		x = e.offsetX ;//- imageView.offsetLeft;
-		y = e.offsetY ;//- imageView.offsetTop;
+		x = e.offsetX; //- imageView.offsetLeft;
+		y = e.offsetY; //- imageView.offsetTop;
 	}
 	if (x < 30-10 || x > 600-30+10)
 		return;
@@ -46,20 +45,27 @@ function mousedownHandler(e) {
 	
 	var xok = false;
 	var yok = false;
+	var x_;
+	var y_;
 	for (var i = 1; i <= 19; i++) {
-		if (x > i*30-15 && x < i*30+15) { //10 better than 15
+		if (x > i*30-15 && x < i*30+15) {
 			x = i*30;
 			xok = true;
+			x_ = i - 1;
 		}
 		if (y > i*30-15 && y < i*30+15) {
 			y = i*30;
 			yok = true;
+			y_ = i - 1;
 		}
 	}
 	if (!xok || !yok)
 		return;
 
-
+	play(x_, y_, move_count);
+	showPan();
+	// now we put the new stone on the board
+	/*
 	move_count ++;
 	var c = document.getElementById("weiqi");
 	var cxt = c.getContext("2d");
@@ -70,7 +76,7 @@ function mousedownHandler(e) {
 	else
 		cxt.fillStyle="white";
 	cxt.fill();
-
+	*/
 }
 
 function mousemoveHandler(e) {
@@ -87,7 +93,7 @@ function mousemoveHandler(e) {
 	var xok = false;
 	var yok = false;
 	for (var i = 1; i <= 19; i++) {
-		if (x > i*30-15 && x < i*30+15) { //10 better than 15
+		if (x > i*30-15 && x < i*30+15) {
 			x = i*30;
 			xok = true;
 		}
@@ -96,14 +102,16 @@ function mousemoveHandler(e) {
 			yok = true;
 		}
 	}
+	if (!xok || !yok)
+		return;
 
 	var c = document.getElementById("path");
 	var cxt = c.getContext("2d");
-	//cxt.fillStyle = "silver";
-	//cxt.fillRect(0,0,600,600);
+
+	// clear the path
 	cxt.clearRect(0,0,600,600);
-	if (!xok || !yok)
-		return;
+
+	// put a new Gray stone
 	cxt.beginPath();
 	cxt.arc(x,y,15,0,2*Math.PI,false);
 	cxt.fillStyle="gray";
@@ -116,7 +124,6 @@ function mousemoveHandler(e) {
 	else
 		cxt.fillStyle="white";
 	cxt.fill();
-
 }
 
 function mouseoutHandler(e) {
@@ -126,21 +133,21 @@ function mouseoutHandler(e) {
 }
 
 function initBoard() {
-	var c = document.getElementById("weiqi");
-	//c.addEventListener('mousedown', mousedownHandler, false);
-	//cxt.mousedown = mousedownHandler;
 	var c_path = document.getElementById("path");
 	c_path.addEventListener('mousedown', mousedownHandler, false);
 	c_path.addEventListener('mousemove', mousemoveHandler, false);
 	c_path.addEventListener('mouseout', mouseoutHandler, false);
-	//cxt.addEventListener('mouseup', canvasMouseHandler, false);
-	var cxt = c.getContext("2d");
+
+	var c_weiqi = document.getElementById("weiqi");
+	var cxt = c_weiqi.getContext("2d");
 	cxt.fillStyle = "silver";
 	cxt.fillRect(0,0,600,600);
 
 	grid(cxt);
 	ninePoints(cxt);
 	//pan[3][6] = 1;
+	//addLoadEvent(showPan);
+	showPan();
 }
 
 function addLoadEvent(func) {
