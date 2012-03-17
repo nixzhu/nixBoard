@@ -88,15 +88,7 @@ function play(row, col) {
 		return;
 	}
 
-/*
-算法（需要写些函数，还有结构shadow，flood填充等）：
-	 可下（周围有气，无气但能杀死对手）
-	 	若能提掉对手
-			若是劫，且不该落子，返回
-			不是劫，提吃对手，落子，返回
-		落子，返回
-	 不可下（自己会死），返回
-*/
+	// TODO 暂时先不考虑劫，落子提吃弄好后再处理劫争
 	var can_down = false; // 是否可落子
 	if (!have_air(row, col)) {
 		if (have_my_people(row, col)) {
@@ -111,17 +103,21 @@ function play(row, col) {
 			flood_fill(row, col, color);	
 			if (fill_block_have_air(row, col, color)) {
 				can_down = true;
+				//TODO 若能提吃，提吃
 			} else {
-				
+				//TODO 若能提吃
+					// 提吃，落子
 			}
 			//shadow_to_pan();
 		} else {
-			// if can kill 
+			// 劫争也应该在此处理，只在此处理？
+			// TODO if can kill 
 				can_down = true;
 			// else
 		}
 	} else {
 		can_down = true;
+		// TODO 若能提吃，提吃
 	}
 	if (can_down) {
 		stone_down(row, col);
