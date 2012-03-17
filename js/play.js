@@ -122,14 +122,23 @@ function play(row, col) {
 					// 提吃，落子
 				if (cret) {
 					can_down = true;
+				} else {
+					alert("无气，不能落子！！");
 				}
 			}
 			//shadow_to_pan();
 		} else {
-			// 劫争也应该在此处理，只在此处理？
-			// TODO if can kill 
+			// TODO 劫争也应该在此处理，只在此处理？
+			// T-ODO if can kill 
+			var dead_body = new Array();
+			var cret = can_eat(row, col, color, dead_body);
+			clean_dead_body(dead_body);
+					// 提吃，落子
+			if (cret) {
 				can_down = true;
-			// else
+			} else {
+				alert("无气，不能落子！！");
+			}
 		}
 	} else {
 		can_down = true;
