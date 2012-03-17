@@ -1,6 +1,6 @@
 /* some global values */
 var pan = new Array(
-	[6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],
@@ -57,7 +57,7 @@ function play(row, col) {
 	}
 	// 处理已有棋子在此
 	if (pan[row][col] != 0) {
-		alert("此处已有棋子！", row, col);
+		alert("此处已有棋子！%d %d", row, col);
 		return;
 	}
 
@@ -70,14 +70,247 @@ function play(row, col) {
 		落子，返回
 	 不可下（自己会死），返回
 */
+	have_air(row, col);
+	have_my_people(row, col);
 
-	// 落子，变成函数吧
+	stone_down(row, col);
+
+}
+
+/* 坐标周围4交叉点有气否？ */
+function have_air(row, col) {
+	if (row > 0 && row < 19-1 && col > 0 && row < 19-1) { //非边角 1->17(0->18)
+		if (	pan[row+1][col] !== 0 &&
+				pan[row-1][col] !== 0 &&
+				pan[row][col+1] !== 0 &&
+				pan[row][col-1] !== 0 ) {
+			//alert("have no air");
+			return false;
+		} else {
+			//alert("have air");
+			return true;
+		}
+	} else if (row === 0 && col > 0 && col < 19-1) { // 边
+		if (	pan[row+1][col] !== 0 &&
+				pan[row][col+1] !== 0 &&
+				pan[row][col-1] !== 0 ) {
+			//alert("have no air");
+			return false;
+		} else {
+			//alert("have air");
+			return true;
+		}
+	} else if (row === 19-1 && col > 0 && col < 19-1) {
+		if (	pan[row-1][col] !== 0 &&
+				pan[row][col+1] !== 0 &&
+				pan[row][col-1] !== 0 ) {
+			return false;
+		} else {
+			return true;
+		}
+	} else if (col === 0 && row > 0 && row < 19-1) {
+		if (	pan[row][col+1] !== 0 &&
+				pan[row+1][col] !== 0 &&
+				pan[row-1][col] !== 0 ) {
+			return false;
+		} else {
+			return true;
+		}
+	} else if (col === 19-1 && row > 0 && row < 19-1) {
+		if (	pan[row][col-1] !== 0 &&
+				pan[row+1][col] !== 0 &&
+				pan[row-1][col] !== 0 ) {
+			return false;
+		} else {
+			return true;
+		}
+	} else if (row === 0 && col === 0) { // 角
+		if (	pan[row][col+1] !== 0 &&
+				pan[row+1][col] !== 0) {
+			return false;
+		} else {
+			return true;
+		}
+	} else if (row === 0 && col === 19-1) {
+		if (	pan[row][col-1] !== 0 &&
+				pan[row+1][col] !== 0) {
+			return false;
+		} else {
+			return true;
+		}
+	} else if (row === 19-1 && col === 0) {
+		if (	pan[row][col+1] !== 0 &&
+				pan[row-1][col] !== 0) {
+			return false;
+		} else {
+			return true;
+		}
+	} else if (row === 19-1 && col === 19-1) {
+		if (	pan[row][col-1] !== 0 &&
+				pan[row-1][col] !== 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+
+
+		
+}
+
+/* 坐标周围是否有我方的棋子 */
+function have_my_people(row, col) { //FIXME 边角没有处理呢
+	if (row > 0 && row < 19-1 && col > 0 && row < 19-1) { //非边角 1->17(0->18)
+		if (move_count % 2 === 0) { //未落子前是白
+			if (	pan[row+1][col] === 1 ||
+					pan[row-1][col] === 1 ||
+					pan[row][col+1] === 1 ||
+					pan[row][col-1] === 1 ) {
+				alert("have my people");
+				return true;
+			}
+		} else {
+			if (	pan[row+1][col] === 2 ||
+					pan[row-1][col] === 2 ||
+					pan[row][col+1] === 2 ||
+					pan[row][col-1] === 2 ) {
+				alert("have my people");
+				return true;
+			}
+		}
+	} else if (row === 0 && col > 0 && col < 19-1) { // 边
+		if (move_count % 2 === 0) { //未落子前是白
+			if (	pan[row+1][col] === 1 ||
+					pan[row][col+1] === 1 ||
+					pan[row][col-1] === 1 ) {
+				alert("have my people");
+				return true;
+			}
+		} else {
+			if (	pan[row+1][col] === 2 ||
+					pan[row][col+1] === 2 ||
+					pan[row][col-1] === 2 ) {
+				alert("have my people");
+				return true;
+			}
+		}
+	} else if (row === 19-1 && col > 0 && col < 19-1) { // 边
+		if (move_count % 2 === 0) { //未落子前是白
+			if (	pan[row-1][col] === 1 ||
+					pan[row][col+1] === 1 ||
+					pan[row][col-1] === 1 ) {
+				alert("have my people");
+				return true;
+			}
+		} else {
+			if (	pan[row-1][col] === 2 ||
+					pan[row][col+1] === 2 ||
+					pan[row][col-1] === 2 ) {
+				alert("have my people");
+				return true;
+			}
+		}
+	} else if (col === 19-1 && row > 0 && row < 19-1) {
+		if (move_count % 2 === 0) { //未落子前是白
+			if (	pan[row+1][col] === 1 ||
+					pan[row-1][col] === 1 ||
+					pan[row][col-1] === 1 ) {
+				alert("have my people");
+				return true;
+			}
+		} else {
+			if (	pan[row+1][col] === 2 ||
+					pan[row-1][col] === 2 ||
+					pan[row][col-1] === 2 ) {
+				alert("have my people");
+				return true;
+			}
+		}
+	} else if (col === 0 && row > 0 && row < 19-1) {
+		if (move_count % 2 === 0) { //未落子前是白
+			if (	pan[row+1][col] === 1 ||
+					pan[row-1][col] === 1 ||
+					pan[row][col+1] === 1 ) {
+				alert("have my people");
+				return true;
+			}
+		} else {
+			if (	pan[row+1][col] === 2 ||
+					pan[row-1][col] === 2 ||
+					pan[row][col+1] === 2 ) {
+				alert("have my people");
+				return true;
+			}
+		}
+	} else if (row === 0 && col === 0) { // 角
+		if (move_count % 2 === 0) { //未落子前是白
+			if (	pan[row+1][col] === 1 ||
+					pan[row][col+1] === 1 ) {
+				alert("have my people");
+				return true;
+			}
+		} else {
+			if (	pan[row+1][col] === 2 ||
+					pan[row][col+1] === 2 ) {
+				alert("have my people");
+				return true;
+			}
+		}
+	} else if (row === 0 && col === 19-1) { // 角
+		if (move_count % 2 === 0) { //未落子前是白
+			if (	pan[row+1][col] === 1 ||
+					pan[row][col-1] === 1 ) {
+				alert("have my people");
+				return true;
+			}
+		} else {
+			if (	pan[row+1][col] === 2 ||
+					pan[row][col-1] === 2 ) {
+				alert("have my people");
+				return true;
+			}
+		}
+	} else if (row === 19-1 && col === 0) { // 角
+		if (move_count % 2 === 0) { //未落子前是白
+			if (	pan[row-1][col] === 1 ||
+					pan[row][col+1] === 1 ) {
+				alert("have my people");
+				return true;
+			}
+		} else {
+			if (	pan[row-1][col] === 2 ||
+					pan[row][col+1] === 2 ) {
+				alert("have my people");
+				return true;
+			}
+		}
+	} else if (row === 19-1 && col === 19-1) { // 角
+		if (move_count % 2 === 0) { //未落子前是白
+			if (	pan[row-1][col] === 1 ||
+					pan[row][col-1] === 1 ) {
+				alert("have my people");
+				return true;
+			}
+		} else {
+			if (	pan[row-1][col] === 2 ||
+					pan[row][col-1] === 2 ) {
+				alert("have my people");
+				return true;
+			}
+		}
+	}
+
+
+	return false;
+}
+
+// 真正落子
+function stone_down(row, col) {
 	if (move_count % 2 === 0) { //未落子前是白
 		pan[row][col] = 1; //就放黑
 	} else {
 		pan[row][col] = 2;
 	}
 	move_count ++;
-
 }
-
