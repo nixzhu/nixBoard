@@ -45,6 +45,13 @@ var shadow = new Array(
 function showPan() {
 	var c = document.getElementById("weiqi");
 	var cxt = c.getContext("2d");
+	
+	cxt.clearRect(0,0,600,600);
+	cxt.fillStyle = "silver";
+	cxt.fillRect(0,0,600,600);
+	grid(cxt);
+	ninePoints(cxt);
+
 	for (var i = 0; i < 19; i++) {
 		for (var j = 0; j < 19; j++) {
 			if (pan[i][j] === 1) { //black
@@ -90,20 +97,23 @@ function play(row, col) {
 
 	// TODO 暂时先不考虑劫，落子提吃弄好后再处理劫争
 	var can_down = false; // 是否可落子
-	if (!have_air(row, col)) {
-		if (have_my_people(row, col)) {
-			make_shadow();
-
 			// 得到将落子的棋子的颜色
 			var color = 2; // 白
 			if (move_count % 2 === 0) { // 未落子前是白
 				color = 1; 
 			}
+	if (!have_air(row, col)) {
+		if (have_my_people(row, col)) {
+			make_shadow();
+
 
 			flood_fill(row, col, color);	
 			if (fill_block_have_air(row, col, color)) {
 				can_down = true;
 				//TODO 若能提吃，提吃
+				//var dead_body = new Array();
+				//can_eat(row, col, color, dead_body);
+				//clean_dead_body(dead_body);
 			} else {
 				//TODO 若能提吃
 					// 提吃，落子
@@ -117,12 +127,85 @@ function play(row, col) {
 		}
 	} else {
 		can_down = true;
+				var dead_body = new Array();
+				can_eat(row, col, color, dead_body);
+				clean_dead_body(dead_body);
 		// TODO 若能提吃，提吃
 	}
 	if (can_down) {
 		stone_down(row, col);
 	}
 }
+
+/* 能提吃吗？ */
+function can_eat(row, col, color, dead_body) { // color 是当前要落子的颜色
+	var anti_color = 2;
+	if (color === 2)
+		anti_color = 1;
+
+	if (row+1 <= 19-1 && pan[row+1][col] === anti_color) {
+		make_shadow();
+		shadow[row][col] = color;
+		flood_fill(row+1, col, anti_color);
+		if (!anti_fill_block_have_air(anti_color)) {
+			// 记录下这些7的坐标，以及(row+1,col)，表示可以提吃的对方棋子
+			//alert("提吃: "+(row+1).toString()+","+col.toString());
+			record_dead_body(dead_body);
+		}
+
+	}
+	if (row-1 >= 0 && pan[row-1][col] === anti_color) {
+		make_shadow();
+		shadow[row][col] = color;
+		flood_fill(row-1, col, anti_color);
+		if (!anti_fill_block_have_air(anti_color)) {
+			// 记录下这些7的坐标，以及(row+1,col)，表示可以提吃的对方棋子
+			//alert("提吃: "+(row+1).toString()+","+col.toString());
+			record_dead_body(dead_body);
+		}
+
+	}
+	if (col+1 <= 19-1 && pan[row][col+1] === anti_color) {
+		make_shadow();
+		shadow[row][col] = color;
+		flood_fill(row, col+1, anti_color);
+		if (!anti_fill_block_have_air(anti_color)) {
+			// 记录下这些7的坐标，以及(row+1,col)，表示可以提吃的对方棋子
+			//alert("提吃: "+(row+1).toString()+","+col.toString());
+			record_dead_body(dead_body);
+		}
+
+	}
+	if (col-1 >= 0 && pan[row][col-1] === anti_color) {
+		make_shadow();
+		shadow[row][col] = color;
+		flood_fill(row, col-1, anti_color);
+		if (!anti_fill_block_have_air(anti_color)) {
+			// 记录下这些7的坐标，以及(row+1,col)，表示可以提吃的对方棋子
+			//alert("提吃: "+(row+1).toString()+","+col.toString());
+			record_dead_body(dead_body);
+		}
+
+	}
+}
+
+function record_dead_body(db) {
+	for (var row = 0; row < shadow.length; row++) {
+		for (var col = 0; col < shadow[row].length; col++) {
+			if (shadow[row][col] === 7) {
+				db.push([row, col]);
+				//alert("DEAD: "+(row).toString()+","+col.toString());
+			}
+		}
+	}
+}
+function clean_dead_body(db) {
+	for (var i = 0; i < db.length; i++) {
+		pan[db[i][0]][db[i][1]] = 0;
+		//alert("OUT: "+(db[i][0]).toString()+","+(db[i][1]).toString());
+	}	
+}
+
 /* 填充的区域周围是否有空 */
 function fill_block_have_air(row, col, color) {
 	for (var i = 0; i < pan.length; i++) {
@@ -136,6 +219,18 @@ function fill_block_have_air(row, col, color) {
 	}
 	alert("fill block 无气！！！");
 	return false;
+}
+/* 提吃判断专用 */
+function anti_fill_block_have_air(color) {
+	for (var i = 0; i < pan.length; i++) {
+		for (var j = 0; j < pan[i].length; j++) {
+			if (shadow[i][j] === 7 && pan[i][j] !== color) {
+				return true; // 活
+			}
+		}
+	}
+	//alert("anti fill block 无气！！！");
+	return false; //死
 }
 /* 将盘面做个影分身 */
 function make_shadow() {
@@ -154,7 +249,7 @@ function shadow_to_pan() {
 }
 
 /* 泛洪填充，只操作影分身 */
-function flood_fill(row, col, color) { // color 为当前将要落子的棋子色
+function flood_fill(row, col, color) { // color 为当前要填充的颜色
 	if (row < 0 || row > 19-1 || col < 0 || col > 19-1)
 		return;
 
@@ -162,7 +257,7 @@ function flood_fill(row, col, color) { // color 为当前将要落子的棋子�
 	if (color === 2)
 		anti_color = 1;
 
-	if (shadow[row][col] !== anti_color && shadow[row][col] !== 7) { // 非对方颜色，己方或空
+	if (shadow[row][col] !== anti_color && shadow[row][col] !== 7) { // 非color颜色，且未被填充
 		shadow[row][col] = 7; // 表示已被填充
 		flood_fill(row+1, col, color);
 		flood_fill(row-1, col, color);
