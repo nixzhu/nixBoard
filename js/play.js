@@ -1,9 +1,5 @@
 /* some global values */
 var pan = new Array(
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -15,7 +11,11 @@ var pan = new Array(
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -110,13 +110,19 @@ function play(row, col) {
 			flood_fill(row, col, color);	
 			if (fill_block_have_air(row, col, color)) {
 				can_down = true;
-				//TODO 若能提吃，提吃
-				//var dead_body = new Array();
-				//can_eat(row, col, color, dead_body);
-				//clean_dead_body(dead_body);
+				//T-ODO 若能提吃，提吃
+				var dead_body = new Array();
+				can_eat(row, col, color, dead_body);
+				clean_dead_body(dead_body);
 			} else {
-				//TODO 若能提吃
+				//T-ODO 若能提吃
+				var dead_body = new Array();
+				var cret = can_eat(row, col, color, dead_body);
+				clean_dead_body(dead_body);
 					// 提吃，落子
+				if (cret) {
+					can_down = true;
+				}
 			}
 			//shadow_to_pan();
 		} else {
@@ -127,10 +133,10 @@ function play(row, col) {
 		}
 	} else {
 		can_down = true;
-				var dead_body = new Array();
-				can_eat(row, col, color, dead_body);
-				clean_dead_body(dead_body);
-		// TODO 若能提吃，提吃
+		var dead_body = new Array();
+		can_eat(row, col, color, dead_body);
+		clean_dead_body(dead_body);
+		// T-ODO 若能提吃，提吃
 	}
 	if (can_down) {
 		stone_down(row, col);
@@ -139,6 +145,7 @@ function play(row, col) {
 
 /* 能提吃吗？ */
 function can_eat(row, col, color, dead_body) { // color 是当前要落子的颜色
+	var ret = false;
 	var anti_color = 2;
 	if (color === 2)
 		anti_color = 1;
@@ -150,7 +157,8 @@ function can_eat(row, col, color, dead_body) { // color 是当前要落子的颜
 		if (!anti_fill_block_have_air(anti_color)) {
 			// 记录下这些7的坐标，以及(row+1,col)，表示可以提吃的对方棋子
 			//alert("提吃: "+(row+1).toString()+","+col.toString());
-			record_dead_body(dead_body);
+			var rret = record_dead_body(dead_body);
+			ret = ret || rret;
 		}
 
 	}
@@ -159,9 +167,8 @@ function can_eat(row, col, color, dead_body) { // color 是当前要落子的颜
 		shadow[row][col] = color;
 		flood_fill(row-1, col, anti_color);
 		if (!anti_fill_block_have_air(anti_color)) {
-			// 记录下这些7的坐标，以及(row+1,col)，表示可以提吃的对方棋子
-			//alert("提吃: "+(row+1).toString()+","+col.toString());
-			record_dead_body(dead_body);
+			var rret = record_dead_body(dead_body);
+			ret = ret || rret;
 		}
 
 	}
@@ -170,9 +177,8 @@ function can_eat(row, col, color, dead_body) { // color 是当前要落子的颜
 		shadow[row][col] = color;
 		flood_fill(row, col+1, anti_color);
 		if (!anti_fill_block_have_air(anti_color)) {
-			// 记录下这些7的坐标，以及(row+1,col)，表示可以提吃的对方棋子
-			//alert("提吃: "+(row+1).toString()+","+col.toString());
-			record_dead_body(dead_body);
+			var rret = record_dead_body(dead_body);
+			ret = ret || rret;
 		}
 
 	}
@@ -181,23 +187,26 @@ function can_eat(row, col, color, dead_body) { // color 是当前要落子的颜
 		shadow[row][col] = color;
 		flood_fill(row, col-1, anti_color);
 		if (!anti_fill_block_have_air(anti_color)) {
-			// 记录下这些7的坐标，以及(row+1,col)，表示可以提吃的对方棋子
-			//alert("提吃: "+(row+1).toString()+","+col.toString());
-			record_dead_body(dead_body);
+			var rret = record_dead_body(dead_body);
+			ret = ret || rret;
 		}
 
 	}
+	return ret;
 }
 
 function record_dead_body(db) {
+	var ret = false;
 	for (var row = 0; row < shadow.length; row++) {
 		for (var col = 0; col < shadow[row].length; col++) {
 			if (shadow[row][col] === 7) {
 				db.push([row, col]);
+				ret = true; // it's true have dead body
 				//alert("DEAD: "+(row).toString()+","+col.toString());
 			}
 		}
 	}
+	return ret;
 }
 function clean_dead_body(db) {
 	for (var i = 0; i < db.length; i++) {
@@ -217,7 +226,7 @@ function fill_block_have_air(row, col, color) {
 			}
 		}
 	}
-	alert("fill block 无气！！！");
+	//alert("fill block 无气！！！");
 	return false;
 }
 /* 提吃判断专用 */
@@ -273,7 +282,7 @@ function have_air(row, col) {
 				pan[row-1][col] !== 0 &&
 				pan[row][col+1] !== 0 &&
 				pan[row][col-1] !== 0 ) {
-			alert("have no air");
+			//alert("have no air");
 			return false;
 		} else {
 			//alert("have air");
@@ -356,7 +365,7 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 					pan[row-1][col] === 1 ||
 					pan[row][col+1] === 1 ||
 					pan[row][col-1] === 1 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		} else {
@@ -364,7 +373,7 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 					pan[row-1][col] === 2 ||
 					pan[row][col+1] === 2 ||
 					pan[row][col-1] === 2 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		}
@@ -373,14 +382,14 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 			if (	pan[row+1][col] === 1 ||
 					pan[row][col+1] === 1 ||
 					pan[row][col-1] === 1 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		} else {
 			if (	pan[row+1][col] === 2 ||
 					pan[row][col+1] === 2 ||
 					pan[row][col-1] === 2 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		}
@@ -389,14 +398,14 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 			if (	pan[row-1][col] === 1 ||
 					pan[row][col+1] === 1 ||
 					pan[row][col-1] === 1 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		} else {
 			if (	pan[row-1][col] === 2 ||
 					pan[row][col+1] === 2 ||
 					pan[row][col-1] === 2 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		}
@@ -405,14 +414,14 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 			if (	pan[row+1][col] === 1 ||
 					pan[row-1][col] === 1 ||
 					pan[row][col-1] === 1 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		} else {
 			if (	pan[row+1][col] === 2 ||
 					pan[row-1][col] === 2 ||
 					pan[row][col-1] === 2 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		}
@@ -421,14 +430,14 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 			if (	pan[row+1][col] === 1 ||
 					pan[row-1][col] === 1 ||
 					pan[row][col+1] === 1 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		} else {
 			if (	pan[row+1][col] === 2 ||
 					pan[row-1][col] === 2 ||
 					pan[row][col+1] === 2 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		}
@@ -436,13 +445,13 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 		if (move_count % 2 === 0) { //未落子前是白
 			if (	pan[row+1][col] === 1 ||
 					pan[row][col+1] === 1 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		} else {
 			if (	pan[row+1][col] === 2 ||
 					pan[row][col+1] === 2 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		}
@@ -450,13 +459,13 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 		if (move_count % 2 === 0) { //未落子前是白
 			if (	pan[row+1][col] === 1 ||
 					pan[row][col-1] === 1 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		} else {
 			if (	pan[row+1][col] === 2 ||
 					pan[row][col-1] === 2 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		}
@@ -464,13 +473,13 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 		if (move_count % 2 === 0) { //未落子前是白
 			if (	pan[row-1][col] === 1 ||
 					pan[row][col+1] === 1 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		} else {
 			if (	pan[row-1][col] === 2 ||
 					pan[row][col+1] === 2 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		}
@@ -478,13 +487,13 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 		if (move_count % 2 === 0) { //未落子前是白
 			if (	pan[row-1][col] === 1 ||
 					pan[row][col-1] === 1 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		} else {
 			if (	pan[row-1][col] === 2 ||
 					pan[row][col-1] === 2 ) {
-				alert("have my people");
+				//alert("have my people");
 				return true;
 			}
 		}
