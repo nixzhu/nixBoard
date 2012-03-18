@@ -1,3 +1,9 @@
+/*
+	author: @nixzhu (zhuhongxu@gmail.com)
+	description: 将Canvas格式化为棋盘，鼠标事件处理，注意move时的棋子提示
+	license: GPL
+*/
+
 function grid(cxt) {
 	// the first point is (30, 30)
 	for (var i = 0; i < 19; i++) {
@@ -145,8 +151,7 @@ function initBoard() {
 
 	grid(cxt);
 	ninePoints(cxt);
-	//pan[3][6] = 1;
-	//addLoadEvent(showPan);
+
 	showPan();
 }
 

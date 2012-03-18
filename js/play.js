@@ -1,3 +1,9 @@
+/*
+	author: @nixzhu (zhuhongxu@gmail.com)
+	description: 实现围棋的落子逻辑（包括提吃和打劫的处理）
+	license: GPL
+*/
+
 /* some global values */
 var pan = new Array(
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
