@@ -41,11 +41,13 @@ var shadow = new Array(
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 );
+var jie = new Array();
 
 function showPan() {
 	var c = document.getElementById("weiqi");
 	var cxt = c.getContext("2d");
 	
+	/* 清空，重新画线等 */
 	cxt.clearRect(0,0,600,600);
 	cxt.fillStyle = "silver";
 	cxt.fillRect(0,0,600,600);
@@ -72,14 +74,6 @@ function showPan() {
 				cxt.fillStyle="red";
 				cxt.fill();
 			}
-			else {
-				/*
-				cxt.beginPath();
-				cxt.arc((i+1)*30, (j+1)*30,15,0,2*Math.PI,false);
-				cxt.fillStyle="gray";
-				cxt.fill();
-				*/
-			}
 		}
 	}
 }
@@ -95,13 +89,13 @@ function play(row, col) {
 		return;
 	}
 
-	// TODO 暂时先不考虑劫，落子提吃弄好后再处理劫争
 	var can_down = false; // 是否可落子
-			// 得到将落子的棋子的颜色
-			var color = 2; // 白
-			if (move_count % 2 === 0) { // 未落子前是白
-				color = 1; 
-			}
+	// 得到将落子的棋子的颜色
+	var color = 2; // 白
+	if (move_count % 2 === 0) { // 未落子前是白
+		color = 1; 
+	}
+
 	if (!have_air(row, col)) {
 		if (have_my_people(row, col)) {
 			make_shadow();
@@ -110,34 +104,32 @@ function play(row, col) {
 			flood_fill(row, col, color);	
 			if (fill_block_have_air(row, col, color)) {
 				can_down = true;
-				//T-ODO 若能提吃，提吃
 				var dead_body = new Array();
 				can_eat(row, col, color, dead_body);
 				clean_dead_body(dead_body);
 			} else {
-				//T-ODO 若能提吃
 				var dead_body = new Array();
 				var cret = can_eat(row, col, color, dead_body);
 				clean_dead_body(dead_body);
-					// 提吃，落子
+
 				if (cret) {
 					can_down = true;
 				} else {
 					alert("无气，不能落子！！");
 				}
 			}
-			//shadow_to_pan();
 		} else {
-			// TODO 劫争也应该在此处理，只在此处理？
-			// T-ODO if can kill 
 			var dead_body = new Array();
 			var cret = can_eat(row, col, color, dead_body);
-			clean_dead_body(dead_body);
-					// 提吃，落子
+
+			// 劫争也应该在此处理，只在此处理？
 			if (cret) {
-				can_down = true;
-			} else {
-				alert("无气，不能落子！！");
+				if (!is_jie(row, col, dead_body)) {
+					clean_dead_body(dead_body);
+					can_down = true;
+				} else {
+					alert("劫, 不能落子, 请至少隔一手棋！");
+				}	
 			}
 		}
 	} else {
@@ -145,11 +137,29 @@ function play(row, col) {
 		var dead_body = new Array();
 		can_eat(row, col, color, dead_body);
 		clean_dead_body(dead_body);
-		// T-ODO 若能提吃，提吃
 	}
 	if (can_down) {
 		stone_down(row, col);
 	}
+}
+function is_jie(row, col, dead_body) { //是否劫
+	//只吃了一个？ 希望我对围棋的理解没错，劫都是只互吃一个。连环劫不考虑（应该也一样）
+	if (dead_body.length === 1) {
+		for (var i = 0; i < jie.length; i++) {
+			//若符合（有坐标，且move_count就是上一手）
+			//注意此处比较的是死去的棋子，下面push的是本次落子的棋子
+			if (	jie[i][0] === dead_body[0][0] && \
+					jie[i][1] === dead_body[0][1] && \
+					jie[i][2] === move_count) {
+				return true;
+			}
+		}
+		//加入记录表
+		jie.push([row, col, move_count+1]);
+		return false;
+	}
+	alert("L2:"+(dead_body.length).toString());
+	return false;
 }
 
 /* 能提吃吗？ */
@@ -507,7 +517,6 @@ function have_my_people(row, col) { //FIXME 边角没有处理呢
 			}
 		}
 	}
-
 
 	return false;
 }
