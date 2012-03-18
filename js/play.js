@@ -148,8 +148,8 @@ function is_jie(row, col, dead_body) { //是否劫
 		for (var i = 0; i < jie.length; i++) {
 			//若符合（有坐标，且move_count就是上一手）
 			//注意此处比较的是死去的棋子，下面push的是本次落子的棋子
-			if (	jie[i][0] === dead_body[0][0] && \
-					jie[i][1] === dead_body[0][1] && \
+			if (	jie[i][0] === dead_body[0][0] && 
+					jie[i][1] === dead_body[0][1] && 
 					jie[i][2] === move_count) {
 				return true;
 			}
