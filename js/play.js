@@ -48,6 +48,7 @@ var shadow = new Array(
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 );
 var jie = new Array();
+var move_record = new Array();
 
 function showPan() {
 	var c = document.getElementById("weiqi");
@@ -71,6 +72,7 @@ function showPan() {
 				//cxt.fillStyle="black";
 				cxt.fillStyle=rg;
 				cxt.fill();
+				
 			}
 			else if (pan[i][j] === 2) { //white
 				var rg = cxt.createRadialGradient((i+1)*30-3, (j+1)*30-3, 1, (i+1)*30-4, (j+1)*30-4, 11);
@@ -88,6 +90,25 @@ function showPan() {
 				cxt.fillStyle="red";
 				cxt.fill();
 			}
+		}
+	}
+	// 显示手数
+	if (move_show_flag) {
+		for (var m = 0; m < move_record.length; m++) {
+			if (move_record[m][2] % 2 === 1) { //black
+				cxt.fillStyle="white";
+			} else {
+				cxt.fillStyle="black";
+			}
+			cxt.font="bold 18px sans-serif";
+			if (move_record[m][2] > 99) {
+				cxt.font="bold 16px sans-serif";
+			}
+			cxt.font="bold 16px sans-serif";
+			cxt.textAlign="center";
+			var move_msg = move_record[m][2].toString();
+			//cxt.fillText(move_msg, (i+1)*30, (j+1)*30+6);
+			cxt.fillText(move_msg, (move_record[m][0]+1)*30, (move_record[m][1]+1)*30+6);
 		}
 	}
 }
@@ -543,4 +564,5 @@ function stone_down(row, col) {
 		pan[row][col] = 2;
 	}
 	move_count ++;
+	move_record.push([row, col, move_count]);	// 记录手数
 }

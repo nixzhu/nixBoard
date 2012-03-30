@@ -8,6 +8,12 @@ h2 {
 	margin: 0 auto;
 	*/
 }
+button {
+	margin-top:20px;
+	height:25px;
+	width:80px;
+	color:blue;
+}
 
 #weiqi {
 	border: 0px solid blue;
