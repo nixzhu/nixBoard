@@ -95,6 +95,10 @@ function showPan() {
 	// 显示手数
 	if (move_show_flag) {
 		for (var m = 0; m < move_record.length; m++) {
+			// 先判断一下棋子还在不在棋盘上
+			if (pan[move_record[m][0]][move_record[m][1]] === 0)
+				continue;
+
 			if (move_record[m][2] % 2 === 1) { //black
 				cxt.fillStyle="white";
 			} else {
