@@ -194,8 +194,11 @@ function play(row, col) {
 		stone_down(row, col);
 	}
 }
+
+// TODO 劫争处理的本质是防止全局同型，基于此，还是要处理连环劫之类的，再说吧
+// 我先看看应氏围棋规则，研究研究
 function is_jie(row, col, dead_body) { //是否劫
-	//只吃了一个？ 希望我对围棋的理解没错，劫都是只互吃一个。连环劫不考虑（应该也一样）
+	//只吃了一个？ 希望我对围棋的理解没错，单劫都是只互吃一个。
 	if (dead_body.length === 1) {
 		for (var i = 0; i < jie.length; i++) {
 			//若符合（有坐标，且move_count就是上一手）
@@ -210,7 +213,6 @@ function is_jie(row, col, dead_body) { //是否劫
 		jie.push([row, col, move_count+1]);
 		return false;
 	}
-	//alert("L2:"+(dead_body.length).toString());
 	return false;
 }
 
