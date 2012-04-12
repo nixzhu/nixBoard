@@ -1,3 +1,9 @@
+/*
+	author: @nixzhu (zhuhongxu@gmail.com)
+	description: 配置手数显示等辅助功能，TODO 撤销、同色等
+	license: GPL
+*/
+
 var move_show_flag = false;
 function deal_button() {
 	var move_show_button = document.getElementById("move_show");	

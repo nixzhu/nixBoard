@@ -53,6 +53,7 @@ var move_record = new Array();
 function showPan() {
 	var c = document.getElementById("weiqi");
 	var cxt = c.getContext("2d");
+	cxt.strokeStyle="black";
 	
 	/* 清空，重新画线等 */
 	cxt.clearRect(0,0,600,600);
@@ -94,7 +95,7 @@ function showPan() {
 	}
 	// 显示手数
 	if (move_show_flag) {
-		for (var m = 0; m < move_record.length; m++) {
+		for (var m = 0; m < move_record.length-1; m++) { // 最新的一手由后面的红色标记
 			// 先判断一下棋子还在不在棋盘上
 			if (pan[move_record[m][0]][move_record[m][1]] === 0)
 				continue;
@@ -127,6 +128,16 @@ function showPan() {
 			//cxt.fillText(move_msg, (i+1)*30, (j+1)*30+6);
 			cxt.fillText(move_msg, (move_record[m][0]+1)*30, (move_record[m][1]+1)*30+6);
 		}
+	}
+	// 特别显示最新的一手
+	if (move_record.length > 0) {
+		cxt.fillStyle = "red";
+		var newest_move = move_record.length-1;
+		cxt.fillRect(
+			(move_record[newest_move][0]+1)*30-5, 
+			(move_record[newest_move][1]+1)*30-5, 
+			10, 10
+		);
 	}
 }
 
