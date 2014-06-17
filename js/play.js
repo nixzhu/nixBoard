@@ -303,7 +303,7 @@ function clean_dead_body(db) {
 function fill_block_have_air(row, col, color) {
 	for (var i = 0; i < pan.length; i++) {
 		for (var j = 0; j < pan[i].length; j++) {
-			if (i !== row && j !== col) {
+			if (i !== row || j !== col) {
 				if (shadow[i][j] === 7 && pan[i][j] !== color) {
 					return true; // 此块有空，可下
 				}
